@@ -12,6 +12,7 @@ return [
     ],
     'default_connection' => 'production',
     'default_excludes' => [
+        'activity_log',
         'telescope_entries',
         'telescope_entries_tags',
         'telescope_monitoring',
