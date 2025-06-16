@@ -52,15 +52,13 @@ class SyncDatabaseCommand extends Command
 
     private function loadConfiguration(): void
     {
-        $this->connectionName = $this->option('config');
+        $this->connectionName = 'production';
 
-        $connections = config('milksync.connections', []);
+        $this->remoteConfig = config("milksync.connections.{$this->connectionName}");
 
-        if (! isset($connections[$this->connectionName])) {
-            throw new \Exception("Connection '{$this->connectionName}' not found in config");
+        if (empty($this->remoteConfig)) {
+            throw new \Exception("Connection 'production' not found in config");
         }
-
-        $this->remoteConfig = $connections[$this->connectionName];
 
         $required = ['host', 'database', 'username', 'password'];
 
@@ -143,7 +141,7 @@ class SyncDatabaseCommand extends Command
         $localDb = config('database.connections.mysql.database');
         $remoteDb = $this->remoteConfig['database'];
 
-        $this->warn("⚠️  This will replace your local database '{$localDb}' with data from {$this->connectionName} '{$remoteDb}'");
+        $this->warn("⚠️ This will replace your local database '{$localDb}' with data from {$this->connectionName} '{$remoteDb}'");
 
         if (!$this->confirm('Do you want to continue?')) {
             $this->info('Sync cancelled.');
@@ -224,19 +222,9 @@ class SyncDatabaseCommand extends Command
 
     private function buildTableFilter(string $database): string
     {
-        $filter = '';
-
-        if (! empty($this->includeTables)) {
-            return $filter;
-        }
-
-        $excludedTables = config('milksync.default_excludes', []);
-
-        foreach ($excludedTables as $table) {
-            $filter .= " --ignore-table={$database}.{$table}";
-        }
-
-        return $filter;
+        return collect(config('milksync.default_excludes', []))
+            ->map(fn($table) => "--ignore-table={$database}.{$table}")
+            ->implode(' ');
     }
 
     private function importToLocalDatabase(string $dumpFile): void
