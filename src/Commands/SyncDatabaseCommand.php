@@ -44,6 +44,7 @@ class SyncDatabaseCommand extends Command
 
         } catch (\Exception $e) {
             $this->error('❌ Sync failed: ' . $e->getMessage());
+
             return 1;
         }
 
@@ -91,13 +92,13 @@ class SyncDatabaseCommand extends Command
             throw new \Exception('mysqldump is not available. Please install MySQL client tools.');
         }
 
-        $this->info("🔍 Testing {$this->connectionName} database connection...");
+        $this->info("🔍 Testing database connection...");
 
         if (! $this->testDatabaseConnection($this->remoteConfig)) {
-            throw new \Exception("Cannot connect to {$this->connectionName} database");
+            throw new \Exception("Cannot connect to database");
         }
 
-        $this->info("✅ {$this->connectionName} database connection successful");
+        $this->info("✅ Database connection successful");
     }
 
     private function testDatabaseConnection(array $config): bool
@@ -113,6 +114,7 @@ class SyncDatabaseCommand extends Command
             return true;
         } catch (\PDOException $e) {
             $this->error("Connection failed: " . $e->getMessage());
+
             return false;
         }
     }
@@ -143,7 +145,7 @@ class SyncDatabaseCommand extends Command
 
         $this->warn("⚠️ This will replace your local database '{$localDb}' with data from {$this->connectionName} '{$remoteDb}'");
 
-        if (!$this->confirm('Do you want to continue?')) {
+        if (! $this->confirm('Do you want to continue?')) {
             $this->info('Sync cancelled.');
 
             exit(0);
@@ -164,7 +166,8 @@ class SyncDatabaseCommand extends Command
         if ($result->successful()) {
             $this->info("✅ Backup created: " . basename($backupFile));
         } else {
-            $this->warn("⚠️  Backup failed: " . $result->errorOutput());
+            $this->warn("⚠️ Backup failed: " . $result->errorOutput());
+
             if (! $this->confirm('Continue without backup?')) {
                 throw new \Exception('Sync cancelled due to backup failure');
             }
@@ -246,7 +249,7 @@ class SyncDatabaseCommand extends Command
 
         $result = Process::run($command);
 
-        if (!$result->successful()) {
+        if (! $result->successful()) {
             throw new \Exception('Failed to import database: ' . $result->errorOutput());
         }
     }
@@ -255,7 +258,7 @@ class SyncDatabaseCommand extends Command
     {
         $keepBackups = config('milksync.backup.keep_backups', 3);
 
-        if (! $keepBackups <= 0) {
+        if ($keepBackups <= 0) {
             return;
         }
 
