@@ -44,6 +44,7 @@ return [
             '--single-transaction',
             '--lock-tables=false',
             '--no-tablespaces',
+            '--ssl-mode=DISABLED',
         ],
         'import_options' => [
             '--force',
