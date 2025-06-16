@@ -32,10 +32,8 @@ return [
         'migrations',
     ],
     'backup' => [
-        'enabled' => true,
-        'path' => storage_path('app/db-backups'),
+        'path' => storage_path('app/milksync-backups'),
         'keep_backups' => 3,
-        'auto_cleanup' => true,
     ],
     'mysql' => [
         'dump_options' => [
@@ -49,13 +47,5 @@ return [
         'import_options' => [
             '--force',
         ],
-    ],
-    'ssh' => [
-        'enabled' => false,
-        'host' => env('SYNC_SSH_HOST'),
-        'port' => env('SYNC_SSH_PORT', 22),
-        'username' => env('SYNC_SSH_USERNAME'),
-        'key_path' => env('SYNC_SSH_KEY_PATH'),
-        'local_port' => env('SYNC_SSH_LOCAL_PORT', 33060),
     ],
 ];

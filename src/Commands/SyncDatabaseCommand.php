@@ -9,9 +9,7 @@ use Illuminate\Support\Facades\Process;
 class SyncDatabaseCommand extends Command
 {
     protected $signature = 'milk:sync 
-                            {--config=production : Remote connection config to use}
                             {--include-only= : Comma-separated list of tables to include only}
-                            {--backup : Create backup of local database before sync}
                             {--force : Skip confirmation prompts}
                             {--dry-run : Show what would be done without executing}';
 
