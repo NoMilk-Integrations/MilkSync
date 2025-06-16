@@ -1,0 +1,36 @@
+{
+  "name": "rootaccessplease/milksync",
+  "description": "A Laravel package for syncing production databases to local development environments",
+  "type": "library",
+  "keywords": ["laravel", "database", "sync", "development", "mysql"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Dennis",
+      "email": "da@nomilk.dk",
+      "homepage": "https://github.com/rootaccessplease"
+    }
+  ],
+  "require": {
+    "php": "^8.3",
+    "laravel/framework": "^12.0",
+    "symfony/process": "^7.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "RootAccessPlease\\MilkSync\\": "src/"
+    }
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "RootAccessPlease\\MilkSync\\MilkSyncServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}
