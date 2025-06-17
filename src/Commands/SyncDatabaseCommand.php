@@ -11,7 +11,8 @@ class SyncDatabaseCommand extends Command
     protected $signature = 'milk:sync 
                             {--include-only= : Comma-separated list of tables to include only}
                             {--force : Skip confirmation prompts}
-                            {--dry-run : Show what would be done without executing}';
+                            {--dry-run : Show what would be done without executing}
+                            {--config= : Path to custom configuration file}';
 
     protected $description = 'Sync remote database to local development environment';
 
@@ -55,10 +56,24 @@ class SyncDatabaseCommand extends Command
     {
         $this->connectionName = 'production';
 
-        $this->remoteConfig = config("milksync.connections.{$this->connectionName}");
+        if ($configPath = $this->option('config')) {
+            if (! file_exists($configPath)) {
+                throw new \Exception("Config file not found: {$configPath}");
+            }
+
+            $customConfig = require $configPath;
+
+            if (! isset($customConfig['connections'][$this->connectionName])) {
+                throw new \Exception("Connection '{$this->connectionName}' not found in custom config");
+            }
+
+            $this->remoteConfig = $customConfig['connections'][$this->connectionName];
+        } else {
+            $this->remoteConfig = config("milksync.connections.{$this->connectionName}");
+        }
 
         if (empty($this->remoteConfig)) {
-            throw new \Exception("Connection 'production' not found in config");
+            throw new \Exception("Connection '{$this->connectionName}' not found in config");
         }
 
         $required = ['host', 'database', 'username', 'password'];
